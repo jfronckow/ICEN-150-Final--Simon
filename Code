@@ -1,0 +1,270 @@
+int switch1 = 5; //button 1
+int switch2 = 7; //button 2
+int switch3 = 9; //button 3
+int switch4 = 11; //button 4
+//Sets the buttons to pins 
+//sets button associated with LED 1 to 5, 2 to 7, 3 to 9, and 4 to 11
+
+//similarly does so, except to the LED's
+//LED 1 is pin 6, 2 is 8, 3 is 10, 4 is 12
+int led1 = 6;
+int led2 = 8;
+int led3 = 10;
+int led4 = 12;
+
+//swts the "turn" to 0. The turn is essentially the level that the game is on
+int turn = 0;
+
+//sets the speaker pin to 2
+int speaker = 2;
+
+
+//turns each input to low or off. (Input are the LED's)
+int input1 = LOW;
+int input2 = LOW;
+int input3 = LOW;
+int input4 = LOW;
+
+//Sets the possible level to 20
+int turn[20];
+//sets the array size to 20 as well. This is the amount of the sequence that can be stored. It is the same as the level
+int inputArray[20];
+//should be the same as the other two. It is the amount of random numbers that can be stored. It is also 20 because of the 20 levels.
+int randomArray[20];
+
+
+void setup() {
+ //sets the LED's as outputs, as well as the speaker or buzzer 
+ pinMode(led1, OUTPUT);
+ pinMode(led2, OUTPUT);
+ pinMode(led3, OUTPUT);
+ pinMode(led4, OUTPUT);
+ pinMode(speaker, OUTPUT);
+
+
+ //similarly, it sets the buttons or switches to input devices
+ pinMode(switch1, INPUT);
+ pinMode(switch2, INPUT);
+ pinMode(switch3, INPUT);
+ pinMode(switch4, INPUT);
+
+ //important `for the random number generator.
+ randomSeed(analogRead(0));
+
+//for every value less than 20, run input and output function
+int y=0;
+for (while y<20){
+  output();
+  //runs output function
+  input();
+  //runs input function
+  y++
+}
+  }
+
+  
+void output() {
+  //sets y equal to current level
+  //and while it is less than or equal to turn increments y
+  for (int y=turn; y <= turn; y++){
+    //`generates a random number from 1 to 4
+    //puts this random number in randarray
+   randomArray[y] = random(1, 5);
+
+   //while x is less than the current level
+   for (int x=0; x <= turn; x++){ 
+
+    //randomarray[x] is the sequence that the lights should light up.
+    //x is the number in the sequence of lights
+    //if it equals 1, then led1 will light up
+     if (randomArray[x] == 1) {
+       digitalWrite(led1, HIGH);
+       // the buzzer will play a sound
+       playTone(1915, 200);
+       //it will wait 2 milliseconds
+       delay(200);
+       //It will then turn it off
+       digitalWrite(led1, LOW);
+       delay(100);
+     }
+
+     //similar to case 1 except for case 2
+     if (randomArray[x] == 2) {
+       digitalWrite(led2, HIGH);
+       //plays a different sound
+       playTone(1519, 200);
+       delay(200);
+       digitalWrite(led2, LOW);
+       delay(100);
+     }
+
+     //case 3
+     //will turn led3 on
+     if (randomArray[x] == 3) {
+       digitalWrite(led3, HIGH);
+       //another unique sound
+       playTone(1275, 200);
+       delay(200);
+       digitalWrite(led3, LOW);
+       delay(100);
+     }
+     //same as before, except for led 4
+     if (randomArray[x] == 4) {
+       digitalWrite(led4, HIGH);
+       //unique sound for 4
+       playTone(956, 200);
+       delay(200);
+       digitalWrite(led4, LOW);
+       delay(100);
+   }
+  }
+ }
+}
+ 
+ 
+//input function
+void input() {
+
+//while x is less then the level
+ for (int x=0; x <= turn;){
+  //reads button q
+   input1 = digitalRead(switch1);
+   //reads button 2
+   input2 = digitalRead(switch2);
+   //reads button 3
+   input3 = digitalRead(switch3);
+   //reads button 4
+   input4 = digitalRead(switch4);
+
+  //if switch 1 is connected
+   if (input1 == HIGH){
+    //make led 1 turn on
+     digitalWrite(led1, HIGH);
+     //play tone for led 1
+     playTone(1915, 200);
+     //waits 200 milliseconds
+     delay(200);
+     //turns led 1 off
+     digitalWrite(led1, LOW);
+     //sets the input to 1
+     //makes array say that the led was on- 1= on
+     inputArray[x] = 1;
+     //waits
+     delay(50);
+     //if the input does not equal the sequence
+     if (inputArray[x] != randomArray[x]) {
+      //go to the fail function
+       fail();                              
+     }  
+     //increment x- go through sequence                                    
+     x++;
+   }
+    //if switch 2 is connected
+   if (input2 == HIGH){
+    //same as before, except button 2
+     digitalWrite(led2, HIGH);
+     //because it corresponds to led 2, it plays the same sound as led 2
+     playTone(1519, 200);
+     delay(200);
+     digitalWrite(led2, LOW);
+     inputArray[x] = 2;
+     delay(50);
+     if (inputArray[x] != randomArray[x]) {
+       fail();
+     }
+     x++;
+
+   }
+    //same as before, just led 3 and button 3
+    //plays led 3 sound
+   if (input3 == HIGH){
+     digitalWrite(led3, HIGH);
+     playTone(1275, 200);
+     delay(200);
+     digitalWrite(led3, LOW);
+     inputArray[x] = 3;
+     delay(50);
+     if (inputArray[x] != randomArray[x]) {
+       fail();
+     }
+     x++;
+
+   }
+    //same as previous 3
+    //button 4 and led 4
+   if (input4 == HIGH){
+
+     digitalWrite(led4, HIGH);
+     playTone(956, 200);
+     delay(200);
+     digitalWrite(led4, LOW);
+     inputArray[x] = 4;
+     delay(50);
+     if (inputArray[x] != randomArray[x]) {
+       fail();
+     }
+     x++;
+
+   }
+  }
+  //waits 1/2 of a second
+ delay(500);
+ //increments the level if the sequence was correct
+ turn++; 
+}
+void fail() {
+
+ //plays the losing sequence in the buzzer
+ playTone(1432, 200);
+ playTone(1, 5);
+ playTone(1432, 200);
+ playTone(1, 5);
+ playTone(1432, 200);
+ playTone(1, 5);
+ playTone(1432, 200);
+ playTone(1, 5);
+ 
+ for (int y=0; y<=10; y++){
+  //flashes all 4 led's 10 ties
+  //turns led 1,2,3,4 on
+  digitalWrite(led1, HIGH);
+  digitalWrite(led2, HIGH);
+  digitalWrite(led3, HIGH);
+  digitalWrite(led4, HIGH);
+  //waits .2 seconds
+  delay(200);
+
+  //turns all leds off
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  digitalWrite(led3, LOW);
+  digitalWrite(led4, LOW);
+  //waits .2 seconds
+  delay(200);
+ }
+ //waits 1/2 a second
+ delay(500);
+ //sets level to a -1. This makes the game restart
+ turn = -1; 
+}
+
+void playTone(int tone, int duration) {
+  //the function that lets the buzzer play the losing sequence
+ for (long i = 0; i < duration * 1000L; i += tone * 2) {
+
+
+
+  //makes the speaker turn on
+   digitalWrite(speaker, HIGH);
+   //plays a tone
+   delayMicroseconds(tone);
+   //turns the speaker off
+   digitalWrite(speaker, LOW);
+   //plays for a certain amount of time (tone time)
+   delayMicroseconds(tone);
+ }
+}
+
+void loop() { //Unused 
+  
+}
